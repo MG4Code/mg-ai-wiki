@@ -1,0 +1,45 @@
+{
+  "transformer": {
+    "term": "Transformer",
+    "queryTerm": "Transformer",
+    "category": "Model Architectures",
+    "slug": "transformer",
+    "tldr": "An architecture using self-attention to process sequences in parallel, foundational to modern LLMs.",
+    "significance": "Transformers replaced recurrent networks, enabling efficient parallelization and scaling to billions of parameters. They power every major language model today (GPT, BERT, Claude) and have become the standard for NLP and beyond.",
+    "related": [
+      "Attention Mechanism",
+      "Self-Attention",
+      "Large Language Models",
+      "Neural Networks"
+    ],
+    "firstSeen": "2024-01-01T00:00:00.000Z"
+  },
+  "attention-mechanism": {
+    "term": "Attention Mechanism",
+    "queryTerm": "Attention Mechanism",
+    "category": "Model Architectures",
+    "slug": "attention-mechanism",
+    "tldr": "A technique that weights different input elements based on relevance, allowing models to focus on important parts.",
+    "significance": "Attention enables models to handle long-range dependencies and context. It's the core innovation behind Transformers and crucial for understanding how language models process meaning across large texts.",
+    "related": [
+      "Transformer",
+      "Self-Attention",
+      "Sequence Modeling"
+    ],
+    "firstSeen": "2024-01-01T00:00:00.000Z"
+  },
+  "retrieval-augmented-generation": {
+    "term": "Retrieval Augmented Generation",
+    "queryTerm": "Retrieval Augmented Generation",
+    "category": "Inference & Serving",
+    "slug": "retrieval-augmented-generation",
+    "tldr": "A technique combining information retrieval with generation to ground responses in external documents and reduce hallucinations.",
+    "significance": "RAG solves a fundamental LLM problem: hallucinations and outdated knowledge. By retrieving relevant documents first, models generate more accurate, factual, and verifiable responses. Critical for production systems.",
+    "related": [
+      "Large Language Models",
+      "Vector Embeddings",
+      "Semantic Search"
+    ],
+    "firstSeen": "2024-01-01T00:00:00.000Z"
+  }
+}

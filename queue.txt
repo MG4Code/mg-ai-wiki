@@ -1,0 +1,13 @@
+# queue.txt — Terms to research
+# ─────────────────────────────────────────────────────────────
+# Add AI/ML terms to this file (one per line).
+# Commit and push to GitHub.
+# A GitHub Action will automatically research each term via Claude.
+# Results are committed to docs/entries.json.
+#
+# Comments start with #. Duplicates are skipped.
+# ─────────────────────────────────────────────────────────────
+
+Transformer
+Attention Mechanism
+Retrieval Augmented Generation
