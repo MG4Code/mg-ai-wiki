@@ -29,36 +29,55 @@ function OnionView({ entries, onSelectTerm }) {
       (relatedCount[b.slug] || 0) - (relatedCount[a.slug] || 0)
     );
 
-    // Assign layers based on reference depth and relationships
+    // Assign layers based on reference depth and relationships with more granularity
     const layerAssignment = {};
     const processed = new Set();
 
-    // Layer 0: Most referenced entries (the core)
-    const coreThreshold = Math.max(1, Math.ceil(list.length * 0.1));
+    // Layer 0: Most referenced entries (the core) - smaller core
+    const coreThreshold = Math.max(1, Math.ceil(list.length * 0.08));
     for (let i = 0; i < Math.min(coreThreshold, entriesByImportance.length); i++) {
       layerAssignment[entriesByImportance[i].slug] = 0;
       processed.add(entriesByImportance[i].slug);
     }
 
-    // Assign remaining entries to layers based on connection distance to core
+    // Assign remaining entries to layers based on connection distance and reference frequency
     const buildLayers = () => {
       let currentLayer = 1;
       let lastProcessedCount = processed.size;
 
-      while (processed.size < list.length && currentLayer < 5) {
+      while (processed.size < list.length && currentLayer < 6) {
+        const entriesToAdd = [];
+
         for (const entry of list) {
           if (processed.has(entry.slug)) continue;
 
           // Check if connected to previous layer
           const connectedToLayer = (entry.related || []).some(slug =>
             layerAssignment[slug] === currentLayer - 1
-          ) || (Object.values(layerAssignment).some(l => l === currentLayer - 1) &&
-                 Object.keys(relatedBy).some(slug =>
-                   relatedBy[slug].includes(entry.slug) &&
-                   layerAssignment[slug] === currentLayer - 1
-                 ));
+          ) || (Object.keys(relatedBy).some(slug =>
+            relatedBy[slug].includes(entry.slug) &&
+            layerAssignment[slug] === currentLayer - 1
+          ));
+
+          // Also consider reference count for more granular layering
+          const refCount = relatedCount[entry.slug] || 0;
+          const isHighlyReferenced = refCount >= (Math.max(...Object.values(relatedCount || {})) * 0.3);
 
           if (connectedToLayer) {
+            // Highly referenced items stay in earlier layers
+            if (isHighlyReferenced && currentLayer > 1 && currentLayer < 4) {
+              entriesToAdd.push({ entry, priority: refCount });
+            } else {
+              layerAssignment[entry.slug] = currentLayer;
+              processed.add(entry.slug);
+            }
+          }
+        }
+
+        // Add high-priority entries to current layer
+        entriesToAdd.sort((a, b) => b.priority - a.priority);
+        for (const { entry } of entriesToAdd) {
+          if (!processed.has(entry.slug)) {
             layerAssignment[entry.slug] = currentLayer;
             processed.add(entry.slug);
           }
@@ -129,7 +148,8 @@ function OnionView({ entries, onSelectTerm }) {
 
   const layerNames = [
     'Core Concepts',
-    'Foundational Layer',
+    'Foundational Core',
+    'Foundational Concepts',
     'Supporting Layer',
     'Related Concepts',
     'Peripheral Ideas',
