@@ -145,18 +145,18 @@ function Sidebar({ catMap, view, go, query, setQuery, results, onSync, syncing }
 }
 
 // ---- entry views -------------------------------------------------------
-function RelatedChips({ related, entryBySlug, nameToSlug, onOpen }) {
+function RelatedChips({ related, entryBySlug, onOpen }) {
   if (!related || !related.length) return null;
   return (
     <div className="related">
       <div className="field-label">Related</div>
       <div className="chips">
-        {related.map((r, i) => {
-          const slug = nameToSlug[r.toLowerCase()] || (entryBySlug[window.slugify(r)] ? window.slugify(r) : null);
-          if (slug) {
-            return <button key={i} className="chip is-link" onClick={() => onOpen(slug)}>{r}</button>;
+        {related.map((slug, i) => {
+          const entry = entryBySlug[slug];
+          if (entry) {
+            return <button key={i} className="chip is-link" onClick={() => onOpen(slug)}>{entry.term}</button>;
           }
-          return <button key={i} className="chip is-ghost" disabled title="Not filed yet. Add to queue.txt to research.">{r}</button>;
+          return <button key={i} className="chip is-ghost" disabled title="Not filed yet. Add to queue.txt to research.">{slug}</button>;
         })}
       </div>
     </div>
@@ -178,7 +178,7 @@ function Breadcrumb({ trail }) {
   );
 }
 
-function TermView({ entry, entryBySlug, nameToSlug, go }) {
+function TermView({ entry, entryBySlug, go }) {
   if (!entry) return null;
   return (
     <article className="term">
@@ -201,7 +201,7 @@ function TermView({ entry, entryBySlug, nameToSlug, go }) {
           <p>{entry.significance}</p>
         </section>
       )}
-      <RelatedChips related={entry.related} entryBySlug={entryBySlug} nameToSlug={nameToSlug}
+      <RelatedChips related={entry.related} entryBySlug={entryBySlug}
                     onOpen={(slug) => go({ type: 'term', slug })} />
       <div className="term-foot">
         <span>Filed {fmtDate(entry.firstSeen)}</span>
@@ -293,14 +293,14 @@ function App() {
   const list = useMemo(() => Object.values(entries), [entries]);
   const catMap = useMemo(() => {
     const m = {};
-    for (const e of list) { (m[e.category] = m[e.category] || []).push(e); }
+    for (const e of list) {
+      const catSlug = e.category;
+      (m[catSlug] = m[catSlug] || []).push(e);
+    }
     for (const k in m) m[k].sort((a, b) => a.term.localeCompare(b.term));
     return m;
   }, [list]);
   const entryBySlug = entries;
-  const nameToSlug = useMemo(() => {
-    const m = {}; for (const e of list) m[e.term.toLowerCase()] = e.slug; return m;
-  }, [list]);
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
@@ -321,7 +321,7 @@ function App() {
   } else if (view.type === 'term') {
     const entry = entries[view.slug];
     main = entry
-      ? <TermView entry={entry} entryBySlug={entryBySlug} nameToSlug={nameToSlug} go={go} />
+      ? <TermView entry={entry} entryBySlug={entryBySlug} go={go} />
       : <div className="missing">That term is not filed. <button className="link-btn" onClick={() => go({ type: 'overview' })}>Back to the map</button></div>;
   }
 

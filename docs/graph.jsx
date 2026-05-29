@@ -49,18 +49,16 @@ function GraphView({ entries, onSelectCategory, onSelectTerm }) {
       const c = byId['cat:' + e.category];
       if (t && c) links.push({ s: t, t: c, kind: 'member' });
     });
-    // Related links (term <-> term) — match related names to existing entries.
+    // Related links (term <-> term) — match related slugs to existing entries.
     const bySlug = {}; list.forEach(e => { bySlug[e.slug] = e; });
-    const nameToSlug = {}; list.forEach(e => { nameToSlug[e.term.toLowerCase()] = e.slug; });
     const seen = new Set();
     list.forEach(e => {
-      (e.related || []).forEach(r => {
-        const rs = nameToSlug[String(r).toLowerCase()] || (bySlug[window.slugify(r)] ? window.slugify(r) : null);
-        if (!rs || rs === e.slug) return;
-        const key = [e.slug, rs].sort().join('|');
+      (e.related || []).forEach(relatedSlug => {
+        if (!bySlug[relatedSlug] || relatedSlug === e.slug) return;
+        const key = [e.slug, relatedSlug].sort().join('|');
         if (seen.has(key)) return;
         seen.add(key);
-        const a = byId['term:' + e.slug], b = byId['term:' + rs];
+        const a = byId['term:' + e.slug], b = byId['term:' + relatedSlug];
         if (a && b) links.push({ s: a, t: b, kind: 'related' });
       });
     });

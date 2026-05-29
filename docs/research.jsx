@@ -33,7 +33,7 @@ function useWiki() {
       setLoading(true);
       const data = await loadEntriesFromJSON();
       if (alive) {
-        setEntries(data);
+        setEntries(data.entries || data);
         setLoading(false);
       }
     })();
@@ -49,8 +49,9 @@ function useWiki() {
   const syncQueue = React.useCallback(async () => {
     // Reload entries from JSON
     const data = await loadEntriesFromJSON();
-    setEntries(data);
-    return Object.keys(data).length;
+    const entries = data.entries || data;
+    setEntries(entries);
+    return Object.keys(entries).length;
   }, []);
 
   const removeEntry = React.useCallback((slug) => {

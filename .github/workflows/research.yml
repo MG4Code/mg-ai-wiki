@@ -37,11 +37,14 @@ jobs:
 
           # Load existing entries
           entries_path = Path('docs/entries.json')
+          categories = {}
+          entries = {}
+
           if entries_path.exists():
               with open(entries_path, 'r') as f:
-                  entries = json.load(f)
-          else:
-              entries = {}
+                  data = json.load(f)
+                  categories = data.get('categories', {})
+                  entries = data.get('entries', {})
 
           # Parse queue.txt
           queue_path = Path('queue.txt')
@@ -53,11 +56,9 @@ jobs:
               lines = f.readlines()
 
           # Get existing categories and terms
-          existing_categories = set()
-          existing_terms_lower = set()
-          for entry in entries.values():
-              existing_categories.add(entry.get('category', ''))
-              existing_terms_lower.add(entry.get('term', '').lower())
+          existing_categories = set(categories.keys())
+          existing_category_labels = set(c.get('label', '') for c in categories.values())
+          existing_terms_lower = set(entry.get('term', '').lower() for entry in entries.values())
 
           # Parse queue
           queue_terms = []
@@ -86,7 +87,7 @@ jobs:
               print(f"Researching: {term}")
 
               # Build category list for Claude
-              cat_list = ', '.join(sorted(existing_categories)) if existing_categories else "(none yet)"
+              cat_list = ', '.join(sorted(existing_category_labels)) if existing_category_labels else "(none yet)"
 
               # Create research prompt
               prompt = f'''You are the research engine for "AI Wiki", a living encyclopedia of artificial-intelligence terminology.
@@ -99,7 +100,7 @@ jobs:
           Respond with ONLY a valid JSON object, no markdown, in exactly this shape:
           {{
             "term": "the canonical name of the term",
-            "category": "one category",
+            "category": "one category label (Title Case)",
             "tldr": "one crisp sentence (max 24 words) defining it",
             "significance": "2-3 sentences on why it matters / what problem it solves",
             "related": ["3-5 closely related AI concepts as short term names"]
@@ -135,31 +136,55 @@ jobs:
                   slug = ''.join(c for c in slug if c.isalnum() or c == '-')
                   slug = slug.strip('-')
 
+                  # Handle category: create slug and add to categories if new
+                  cat_label = data.get('category', 'Uncategorized').strip()
+                  cat_slug = cat_label.lower().replace(' ', '-').replace('&', 'and').replace('_', '-')
+                  cat_slug = ''.join(c for c in cat_slug if c.isalnum() or c == '-')
+                  cat_slug = cat_slug.strip('-')
+
+                  if cat_slug not in categories:
+                      categories[cat_slug] = {
+                          "label": cat_label,
+                          "description": f"Related to {cat_label}"
+                      }
+
+                  # Convert related terms to slugs
+                  related_slugs = []
+                  for r in data.get('related', []):
+                      if isinstance(r, str):
+                          r_slug = r.strip().lower().replace(' ', '-').replace('_', '-')
+                          r_slug = ''.join(c for c in r_slug if c.isalnum() or c == '-')
+                          r_slug = r_slug.strip('-')
+                          related_slugs.append(r_slug)
+
                   # Create entry
                   entry = {
                       "term": data.get('term', term).strip(),
                       "queryTerm": term,
-                      "category": data.get('category', 'Uncategorized').strip(),
+                      "category": cat_slug,
                       "slug": slug,
                       "tldr": data.get('tldr', '').strip(),
                       "significance": data.get('significance', '').strip(),
-                      "related": [r.strip() for r in data.get('related', []) if isinstance(r, str)] or [],
+                      "related": related_slugs,
                       "firstSeen": "2024-01-01T00:00:00.000Z"
                   }
 
                   # Add to entries
                   entries[slug] = entry
-                  existing_categories.add(entry['category'])
-                  print(f"  ✓ Filed under {entry['category']}")
+                  print(f"  ✓ Filed under {cat_label}")
 
               except Exception as e:
                   print(f"  ✗ Error: {str(e)}")
                   continue
 
-          # Save entries.json
+          # Save entries.json in new format
+          output_data = {
+              "categories": categories,
+              "entries": entries
+          }
           with open(entries_path, 'w') as f:
-              json.dump(entries, f, indent=2)
-          print(f"\nUpdated docs/entries.json with {len(entries)} total entries")
+              json.dump(output_data, f, indent=2)
+          print(f"\nUpdated docs/entries.json with {len(entries)} total entries and {len(categories)} categories")
 
           EOF
 

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat)",
+      "Bash(python3 /tmp/check-vercel-app.py)",
+      "Bash(curl -s https://mg-ai-wiki.vercel.app/)"
+    ]
+  }
+}
