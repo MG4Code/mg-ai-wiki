@@ -66,6 +66,16 @@
       "significance": "Evaluation harnesses are essential for fairly comparing model capabilities across benchmarks, enabling reproducible research and transparent reporting of AI performance.",
       "related": [],
       "firstSeen": "2026-05-29T08:51:48.000Z"
+    },
+    "ai-harness": {
+      "term": "AI Harness",
+      "queryTerm": "AI Harness",
+      "category": "tools-and-frameworks",
+      "slug": "ai-harness",
+      "tldr": "A software wrapper or testing framework that standardizes how AI models receive inputs, produce outputs, and are evaluated.",
+      "significance": "AI harnesses provide a controlled, reproducible environment for testing and benchmarking AI models, making it easier to integrate, compare, and deploy them consistently across different systems and workflows.",
+      "related": [],
+      "firstSeen": "2026-05-29T08:58:02.000Z"
     }
   }
 }
