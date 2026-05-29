@@ -6,7 +6,7 @@ const { useWiki, GraphView, OnionView } = window;
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "look": "aurora",
-  "accent": "#a78bff",
+  "accent": "#ff8c42",
   "density": "regular",
   "fontScale": 100,
   "monoTerms": false,
@@ -14,7 +14,7 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 }/*EDITMODE-END*/;
 
 const ACCENTS = {
-  violet: '#a78bff', cyan: '#56c8e8', amber: '#e8b04b', emerald: '#5fd0a3',
+  orange: '#ff8c42', cyan: '#56c8e8', amber: '#e8b04b', emerald: '#5fd0a3',
 };
 
 function fmtDate(iso) {
@@ -63,9 +63,53 @@ function QueueFeed({ log, processing, onClear }) {
 
 // ---- sidebar -----------------------------------------------------------
 function Sidebar({ catMap, view, go, query, setQuery, results }) {
+  const [expandedCats, setExpandedCats] = useState({});
+
+  const toggleCategory = (cat) => {
+    setExpandedCats(prev => ({ ...prev, [cat]: !prev[cat] }));
+  };
+
+  // Layer order matching onion visualization
+  const layerOrder = [
+    'fundamentals',
+    'model-architectures',
+    'inference-and-serving',
+    'tools-and-frameworks',
+    'security-and-safety',
+  ];
+
+  const catLabels = {
+    'fundamentals': 'Fundamentals',
+    'model-architectures': 'Model Architectures',
+    'inference-and-serving': 'Inference & Serving',
+    'tools-and-frameworks': 'Tools & Frameworks',
+    'security-and-safety': 'Security & Safety',
+  };
+
+  const layerColors = [
+    'rgba(167, 139, 255, 0.8)',  // Violet
+    'rgba(86, 200, 232, 0.8)',   // Cyan
+    'rgba(232, 176, 75, 0.8)',   // Amber
+  ];
+
+  const getCategoryColor = (slug) => {
+    const idx = layerOrder.indexOf(slug);
+    if (idx === -1) return 'rgba(150, 150, 150, 0.5)';
+    return layerColors[idx % layerColors.length];
+  };
+
+  const sortedCats = Object.keys(catMap).sort((a, b) => {
+    const aIdx = layerOrder.indexOf(a);
+    const bIdx = layerOrder.indexOf(b);
+    if (aIdx === -1 && bIdx === -1) return a.localeCompare(b);
+    if (aIdx === -1) return 1;
+    if (bIdx === -1) return -1;
+    return aIdx - bIdx;
+  });
+
   return (
     <aside className="sidebar">
-      <div className="brand" onClick={() => go({ type: 'overview' })}>
+      <div className="brand" onClick={() => go({ type: 'onion' })}>
         <div className="brand-mark">◑</div>
         <div className="brand-text">
           <div className="brand-name">AI&nbsp;Wiki</div>
@@ -90,30 +134,38 @@ function Sidebar({ catMap, view, go, query, setQuery, results }) {
       </div>
 
       <nav className="nav">
-        <button className={'nav-top' + (view.type === 'overview' ? ' active' : '')} onClick={() => go({ type: 'overview' })}>
-          <span className="nav-ico">O</span> Overview map
-        </button>
         <button className={'nav-top' + (view.type === 'onion' ? ' active' : '')} onClick={() => go({ type: 'onion' })}>
           <span className="nav-ico">O</span> Onion layers
         </button>
-        <div className="nav-section-label">Categories</div>
+        <button className={'nav-top' + (view.type === 'overview' ? ' active' : '')} onClick={() => go({ type: 'overview' })}>
+          <span className="nav-ico">O</span> Overview map
+        </button>
+        <div className="nav-section-label">Layers</div>
         <div className="nav-cats">
-          {Object.keys(catMap).sort().map(cat => (
+          {sortedCats.map(cat => (
             <div key={cat} className="nav-cat">
-              <button className={'nav-cat-head' + (view.type === 'category' && view.name === cat ? ' active' : '')}
-                      onClick={() => go({ type: 'category', name: cat })}>
-                <span className="nav-cat-name">{cat}</span>
-                <span className="nav-cat-count">{catMap[cat].length}</span>
-              </button>
-              <div className="nav-terms">
-                {catMap[cat].map(e => (
-                  <button key={e.slug}
-                          className={'nav-term' + (view.type === 'term' && view.slug === e.slug ? ' active' : '')}
-                          onClick={() => go({ type: 'term', slug: e.slug })}>
-                    {e.term}
-                  </button>
-                ))}
+              <div className="nav-cat-header">
+                <button className={'nav-cat-head' + (view.type === 'category' && view.name === cat ? ' active' : '')}
+                        onClick={() => go({ type: 'category', name: cat })}>
+                  <span className="nav-cat-dot" style={{ backgroundColor: getCategoryColor(cat) }} />
+                  <span className="nav-cat-name">{catLabels[cat] || cat}</span>
+                  <span className="nav-cat-count">{catMap[cat].length}</span>
+                </button>
+                <button className="nav-cat-toggle" onClick={() => toggleCategory(cat)} title="Toggle category">
+                  <span className={'nav-cat-arrow' + (expandedCats[cat] ? ' expanded' : '')}>▶</span>
+                </button>
               </div>
+              {expandedCats[cat] && (
+                <div className="nav-terms">
+                  {catMap[cat].map(e => (
+                    <button key={e.slug}
+                            className={'nav-term' + (view.type === 'term' && view.slug === e.slug ? ' active' : '')}
+                            onClick={() => go({ type: 'term', slug: e.slug })}>
+                      {e.term}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
           {Object.keys(catMap).length === 0 && <div className="nav-empty">No entries filed yet.</div>}
@@ -183,6 +235,19 @@ function TermView({ entry, entryBySlug, go }) {
       )}
       <RelatedChips related={entry.related} entryBySlug={entryBySlug}
                     onOpen={(slug) => go({ type: 'term', slug })} />
+      {entry.references && entry.references.length > 0 && (
+        <section className="references">
+          <div className="field-label">References</div>
+          <div className="refs-list">
+            {entry.references.map((ref, i) => (
+              <a key={i} href={ref.url} target="_blank" rel="noopener noreferrer" className="ref-link">
+                {ref.title}
+                <span className="ref-icon">↗</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
       <div className="term-foot">
         <span>Filed {fmtDate(entry.firstSeen)}</span>
         <span className="term-foot-src">researched via Claude - pushed via queue.txt</span>
@@ -229,7 +294,6 @@ function OverviewView({ entries, catMap, go, processing, showHubLabels }) {
         <div className="overview-stats">
           <div className="stat"><span className="stat-num">{total}</span><span className="stat-lbl">terms</span></div>
           <div className="stat"><span className="stat-num">{cats}</span><span className="stat-lbl">categories</span></div>
-          <div className={'stat' + (processing ? ' live' : '')}><span className="stat-num">{processing ? 'B' : 'X'}</span><span className="stat-lbl">{processing ? 'researching' : 'idle'}</span></div>
         </div>
       </div>
       <div className={'graph-host' + (showHubLabels ? '' : ' hide-term-labels')}>
@@ -246,7 +310,7 @@ function App() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const wiki = useWiki();
   const { entries, log, processing, pushTerms, syncQueue, resetAll, clearLog } = wiki;
-  const [view, setView] = useState({ type: 'overview' });
+  const [view, setView] = useState({ type: 'onion' });
   const [query, setQuery] = useState('');
 
   const go = useCallback((v) => { setView(v); window.scrollTo(0, 0); }, []);
@@ -311,7 +375,7 @@ function App() {
         <TweakRadio label="Theme" value={t.look} options={['aurora', 'signal', 'ember']}
                     onChange={(v) => setTweak('look', v)} />
         <TweakColor label="Accent" value={t.accent}
-                    options={[ACCENTS.violet, ACCENTS.cyan, ACCENTS.amber, ACCENTS.emerald]}
+                    options={[ACCENTS.orange, ACCENTS.cyan, ACCENTS.amber, ACCENTS.emerald]}
                     onChange={(v) => setTweak('accent', v)} />
         <TweakSection label="Layout" />
         <TweakRadio label="Density" value={t.density} options={['compact', 'regular', 'comfy']}

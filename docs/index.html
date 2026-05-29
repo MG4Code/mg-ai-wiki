@@ -20,7 +20,7 @@
     --fg:       oklch(0.945 0.006 265);
     --fg-dim:   oklch(0.74 0.012 265);
     --fg-faint: oklch(0.56 0.012 265);
-    --accent:   #a78bff;
+    --accent:   #ff8c42;
     --font-scale: 1;
 
     --font: "IBM Plex Sans", system-ui, sans-serif;
@@ -147,17 +147,37 @@
     color: var(--fg-faint); padding: 16px 10px 6px; font-weight: 600;
   }
   .nav-cat { margin-bottom: 2px; }
+  .nav-cat-header {
+    display: flex; align-items: center; gap: 0;
+  }
   .nav-cat-head {
     display: flex; align-items: center; justify-content: space-between; gap: 8px;
-    width: 100%; text-align: left; background: none; border: none;
-    padding: 7px 10px; border-radius: var(--radius-sm);
+    flex: 1; text-align: left; background: none; border: none;
+    padding: 7px 10px; border-radius: var(--radius-sm) 0 0 var(--radius-sm);
     color: var(--fg); font-size: 0.85rem; font-weight: 600;
   }
   .nav-cat-head:hover { background: var(--panel); }
   .nav-cat-head.active { color: var(--accent); }
+  .nav-cat-toggle {
+    background: none; border: none; color: var(--fg-faint);
+    padding: 7px 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 0.7rem;
+  }
+  .nav-cat-toggle:hover { background: var(--panel); }
+  .nav-cat-arrow {
+    display: inline-block; transition: transform 0.2s;
+  }
+  .nav-cat-arrow.expanded {
+    transform: rotate(90deg);
+  }
   .nav-cat-count {
     font-size: 0.68rem; color: var(--fg-faint); font-weight: 500;
     background: var(--panel); border-radius: 20px; padding: 1px 8px; min-width: 22px; text-align: center;
+  }
+  .nav-cat-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex: none;
+    display: inline-block;
   }
   .nav-terms { display: flex; flex-direction: column; margin: 0 0 4px 11px; padding-left: 10px; border-left: 1px solid var(--border-soft); }
   .nav-term {
@@ -256,6 +276,12 @@
   .chip.is-ghost { border-style: dashed; color: var(--fg-faint); background: none; }
   .chip.is-ghost:hover { color: var(--accent); border-color: var(--accent); }
   .chip-plus { color: var(--accent); font-weight: 700; margin-left: 2px; }
+
+  .references { margin-bottom: 40px; }
+  .refs-list { display: flex; flex-direction: column; gap: 10px; }
+  .ref-link { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); text-decoration: none; font-size: 0.9rem; padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid transparent; transition: all 0.2s; }
+  .ref-link:hover { background: color-mix(in oklab, var(--accent) 12%, transparent); border-color: var(--accent); }
+  .ref-icon { font-size: 0.75em; opacity: 0.6; }
 
   .term-foot { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--border-soft); padding-top: 16px; font-size: 0.76rem; color: var(--fg-faint); font-family: var(--mono); }
 
