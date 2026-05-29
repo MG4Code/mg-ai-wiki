@@ -440,7 +440,7 @@
     "ollama": {
       "term": "Ollama",
       "queryTerm": "Ollama",
-      "category": "tools-and-frameworks",
+      "category": "inference-and-serving",
       "slug": "ollama",
       "tldr": "A tool for running large language models locally on your machine, making open-source LLMs accessible without cloud infrastructure.",
       "significance": "Ollama democratizes access to powerful language models by making it trivial to run them locally. Instead of relying on cloud APIs (which require internet, cost money, and send data to external servers), Ollama lets you download and run models like Llama, Mistral, or Neural Chat on your own hardware. This is transformative for privacy-conscious organizations, offline applications, and researchers who want to experiment without cloud bills. Ollama abstracts away the complexity of model serving\u2014you just choose a model and run it, no need to understand GPU optimization, quantization, or serving frameworks. The simplicity is powerful: developers who never worked with LLMs before can now experiment and build with them. Ollama also enables fine-tuning and customization of models locally. As open-source models improve, Ollama becomes increasingly viable for production use cases, reducing dependency on proprietary cloud APIs.",
@@ -464,7 +464,7 @@
     "vllm": {
       "term": "vLLM",
       "queryTerm": "vLLM",
-      "category": "tools-and-frameworks",
+      "category": "inference-and-serving",
       "slug": "vllm",
       "tldr": "A fast and easy-to-use library for LLM inference and serving with optimized GPU utilization.",
       "significance": "vLLM solves a critical bottleneck in production LLM systems: inference speed and efficiency. LLMs are massive models, and serving them efficiently requires careful GPU memory management and optimization. vLLM introduces PagedAttention, a novel technique that manages GPU memory like virtual memory in operating systems, dramatically improving throughput without sacrificing latency. This optimization makes serving large models economically viable\u2014you get 10-100x better throughput compared to naive approaches. vLLM's simplicity is also crucial: it provides a drop-in replacement for OpenAI's API, making it easy to swap a cloud service for local deployment. The library supports various decoding strategies (beam search, sampling, etc.) and works with both open-source and proprietary models. For organizations building production LLM services, vLLM is often the difference between an experimental prototype and an economically viable product. The efficiency gains from vLLM have been adopted by major projects and companies, making it foundational infrastructure for the LLM serving ecosystem.",
