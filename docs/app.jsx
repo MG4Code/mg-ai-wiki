@@ -48,8 +48,8 @@ function QueueFeed({ log, processing, onClear }) {
               <div className="qfeed-term">{item.term}</div>
               <div className="qfeed-meta">
                 {item.status === 'queued' && 'queued'}
-                {item.status === 'researching' && 'researching…'}
-                {item.status === 'filed' && <>filed → <span className="qfeed-cat">{item.category}</span></>}
+                {item.status === 'researching' && 'researching...'}
+                {item.status === 'filed' && <>filed - <span className="qfeed-cat">{item.category}</span></>}
                 {item.status === 'error' && <span className="qfeed-err">error: {item.error}</span>}
               </div>
             </div>
@@ -91,7 +91,7 @@ function Sidebar({ catMap, view, go, query, setQuery, results, onSync, syncing }
 
       <div className="search">
         <input value={query} onChange={e => setQuery(e.target.value)}
-               placeholder="Search terms…" spellCheck={false} />
+               placeholder="Search terms..." spellCheck={false} />
         {query && (
           <div className="search-results">
             {results.length === 0 && <div className="search-none">no matches</div>}
@@ -107,7 +107,7 @@ function Sidebar({ catMap, view, go, query, setQuery, results, onSync, syncing }
 
       <nav className="nav">
         <button className={'nav-top' + (view.type === 'overview' ? ' active' : '')} onClick={() => go({ type: 'overview' })}>
-          <span className="nav-ico">◍</span> Overview map
+          <span className="nav-ico">O</span> Overview map
         </button>
         <div className="nav-section-label">Categories</div>
         <div className="nav-cats">
@@ -135,8 +135,8 @@ function Sidebar({ catMap, view, go, query, setQuery, results, onSync, syncing }
 
       <div className="sidebar-foot">
         <button className={'sync-btn' + (syncing ? ' busy' : '')} onClick={onSync} title="Reload entries from entries.json">
-          <span className="sync-ico">⟳</span>
-          {syncing ? 'Reloading…' : 'Reload entries'}
+          <span className="sync-ico">Reload</span>
+          {syncing ? 'Reloading...' : 'Reload entries'}
         </button>
         <GitHubPrompt />
       </div>
@@ -183,7 +183,7 @@ function TermView({ entry, entryBySlug, nameToSlug, go }) {
   return (
     <article className="term">
       <Breadcrumb trail={[
-        { label: '◍ Map', onClick: () => go({ type: 'overview' }) },
+        { label: 'O Map', onClick: () => go({ type: 'overview' }) },
         { label: entry.category, onClick: () => go({ type: 'category', name: entry.category }) },
         { label: entry.term },
       ]} />
@@ -192,7 +192,7 @@ function TermView({ entry, entryBySlug, nameToSlug, go }) {
         <h1 className="term-title">{entry.term}</h1>
       </div>
       <div className="tldr">
-        <div className="field-label">TL;DR</div>
+        <div className="field-label">TLDR</div>
         <p>{entry.tldr}</p>
       </div>
       {entry.significance && (
@@ -205,7 +205,7 @@ function TermView({ entry, entryBySlug, nameToSlug, go }) {
                     onOpen={(slug) => go({ type: 'term', slug })} />
       <div className="term-foot">
         <span>Filed {fmtDate(entry.firstSeen)}</span>
-        <span className="term-foot-src">researched via Claude · pushed via queue.txt</span>
+        <span className="term-foot-src">researched via Claude - pushed via queue.txt</span>
       </div>
     </article>
   );
@@ -215,7 +215,7 @@ function CategoryView({ name, items, go }) {
   return (
     <div className="catview">
       <Breadcrumb trail={[
-        { label: '◍ Map', onClick: () => go({ type: 'overview' }) },
+        { label: 'O Map', onClick: () => go({ type: 'overview' }) },
         { label: name },
       ]} />
       <div className="catview-head">
@@ -228,7 +228,7 @@ function CategoryView({ name, items, go }) {
           <button key={e.slug} className="entry-card" onClick={() => go({ type: 'term', slug: e.slug })}>
             <h3>{e.term}</h3>
             <p>{e.tldr}</p>
-            <span className="entry-card-go">Read →</span>
+            <span className="entry-card-go">Read -></span>
           </button>
         ))}
       </div>
@@ -244,12 +244,12 @@ function OverviewView({ entries, catMap, go, processing, showHubLabels }) {
       <div className="overview-head">
         <div>
           <h1>The map</h1>
-          <p className="overview-sub">Every term the wiki has researched, drawn by the category it was filed under and the concepts it connects to. Drag nodes to explore · click a hub to enter a category · click a term to read it.</p>
+          <p className="overview-sub">Every term the wiki has researched, drawn by the category it was filed under and the concepts it connects to. Drag nodes to explore - click a hub to enter a category - click a term to read it.</p>
         </div>
         <div className="overview-stats">
           <div className="stat"><span className="stat-num">{total}</span><span className="stat-lbl">terms</span></div>
           <div className="stat"><span className="stat-num">{cats}</span><span className="stat-lbl">categories</span></div>
-          <div className={'stat' + (processing ? ' live' : '')}><span className="stat-num">{processing ? '•' : '✓'}</span><span className="stat-lbl">{processing ? 'researching' : 'idle'}</span></div>
+          <div className={'stat' + (processing ? ' live' : '')}><span className="stat-num">{processing ? 'B' : 'X'}</span><span className="stat-lbl">{processing ? 'researching' : 'idle'}</span></div>
         </div>
       </div>
       <div className={'graph-host' + (showHubLabels ? '' : ' hide-term-labels')}>
@@ -318,11 +318,11 @@ function App() {
     main = <OverviewView entries={entries} catMap={catMap} go={go} processing={processing} showHubLabels={t.showHubLabels} />;
   } else if (view.type === 'category') {
     main = <CategoryView name={view.name} items={catMap[view.name] || []} go={go} />;
-  } else if (view.type === ‘term’) {
+  } else if (view.type === 'term') {
     const entry = entries[view.slug];
     main = entry
       ? <TermView entry={entry} entryBySlug={entryBySlug} nameToSlug={nameToSlug} go={go} />
-      : <div className="missing">That term isn’t filed. <button className="link-btn" onClick={() => go({ type: ‘overview’ })}>Back to the map</button></div>;
+      : <div className="missing">That term is not filed. <button className="link-btn" onClick={() => go({ type: 'overview' })}>Back to the map</button></div>;
   }
 
   return (
