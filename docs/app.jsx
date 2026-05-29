@@ -1,6 +1,8 @@
 // app.jsx — AI Wiki shell: sidebar, search, entry views, queue feed, push bar.
 
 const { useState, useEffect, useMemo, useRef, useCallback } = React;
+const { useTweaks, TweaksPanel, TweakSection, TweakRow, TweakSlider, TweakToggle, TweakRadio, TweakSelect, TweakText, TweakNumber, TweakColor, TweakButton } = window;
+const { useWiki, GraphView } = window;
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "look": "aurora",
