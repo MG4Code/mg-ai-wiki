@@ -1,5 +1,9 @@
 {
   "categories": {
+    "fundamentals": {
+      "label": "Fundamentals",
+      "description": "Core concepts and foundational AI/ML principles"
+    },
     "model-architectures": {
       "label": "Model Architectures",
       "description": "Neural network designs and structural patterns"
@@ -11,9 +15,133 @@
     "tools-and-frameworks": {
       "label": "Tools & Frameworks",
       "description": "Software tools, libraries, and frameworks used in AI/ML development"
+    },
+    "security-and-safety": {
+      "label": "Security & Safety",
+      "description": "Security vulnerabilities, attack vectors, and safety considerations in AI systems"
     }
   },
   "entries": {
+    "artificial-intelligence": {
+      "term": "Artificial Intelligence",
+      "queryTerm": "Artificial Intelligence",
+      "category": "fundamentals",
+      "slug": "artificial-intelligence",
+      "tldr": "The field of computer science focused on creating intelligent machines that can perceive, learn, and act.",
+      "significance": "AI is the overarching discipline encompassing all efforts to build computational systems with human-like or superhuman intelligence. It's transformed industries from healthcare to finance to creative work.",
+      "related": [
+        "machine-learning",
+        "deep-learning",
+        "large-language-models",
+        "generative-ai"
+      ],
+      "firstSeen": "2026-05-29T12:00:00.000Z"
+    },
+    "machine-learning": {
+      "term": "Machine Learning",
+      "queryTerm": "Machine Learning",
+      "category": "fundamentals",
+      "slug": "machine-learning",
+      "tldr": "A subset of AI where systems learn patterns from data without being explicitly programmed.",
+      "significance": "Machine learning enables computers to improve their performance through experience rather than hardcoding rules. It's the practical foundation for most modern AI applications.",
+      "related": [
+        "artificial-intelligence",
+        "deep-learning",
+        "neural-networks",
+        "training-methods"
+      ],
+      "firstSeen": "2026-05-29T12:00:00.000Z"
+    },
+    "deep-learning": {
+      "term": "Deep Learning",
+      "queryTerm": "Deep Learning",
+      "category": "model-architectures",
+      "slug": "deep-learning",
+      "tldr": "Machine learning using neural networks with multiple layers to automatically discover hierarchical patterns in data.",
+      "significance": "Deep learning has enabled breakthroughs in computer vision, natural language processing, and game-playing. It powers most state-of-the-art AI systems today including transformers and large language models.",
+      "related": [
+        "machine-learning",
+        "neural-networks",
+        "transformer",
+        "large-language-models"
+      ],
+      "firstSeen": "2026-05-29T12:00:00.000Z"
+    },
+    "large-language-models": {
+      "term": "Large Language Models",
+      "queryTerm": "Large Language Models",
+      "category": "model-architectures",
+      "slug": "large-language-models",
+      "tldr": "Massive neural networks trained on vast text data that can generate human-like text and perform language understanding tasks.",
+      "significance": "LLMs like GPT, Claude, and PaLM have revolutionized AI by demonstrating emergent capabilities from scale. They're the foundation for modern chatbots, code assistants, and multimodal AI systems.",
+      "related": [
+        "transformer",
+        "generative-ai",
+        "deep-learning",
+        "prompt-engineering"
+      ],
+      "firstSeen": "2026-05-29T12:00:00.000Z"
+    },
+    "generative-ai": {
+      "term": "Generative AI",
+      "queryTerm": "Generative AI",
+      "category": "model-architectures",
+      "slug": "generative-ai",
+      "tldr": "AI systems that can generate new content (text, images, code, audio) by learning patterns from training data.",
+      "significance": "Generative AI has become mainstream with tools like ChatGPT, DALL-E, and Midjourney. It's transforming creative work, software development, and how we interact with technology.",
+      "related": [
+        "large-language-models",
+        "diffusion-models",
+        "prompt-injection",
+        "retrieval-augmented-generation"
+      ],
+      "firstSeen": "2026-05-29T12:00:00.000Z"
+    },
+    "llm": {
+      "term": "LLM",
+      "queryTerm": "LLM",
+      "category": "model-architectures",
+      "slug": "llm",
+      "tldr": "Abbreviation for Large Language Model; a transformer-based neural network trained on massive text corpora.",
+      "significance": "LLM is the core technology behind modern conversational AI and is reshaping how humans interact with software. Understanding LLMs is essential for modern AI development.",
+      "related": [
+        "large-language-models",
+        "transformer",
+        "generative-ai",
+        "prompt-engineering"
+      ],
+      "firstSeen": "2026-05-29T12:00:00.000Z"
+    },
+    "inference": {
+      "term": "Inference",
+      "queryTerm": "Inference",
+      "category": "inference-and-serving",
+      "slug": "inference",
+      "tldr": "The process of using a trained model to make predictions or generate outputs on new data at runtime.",
+      "significance": "Inference is where trained models create real-world value. Optimizing inference speed and cost is critical for deploying AI systems at scale in production environments.",
+      "related": [
+        "large-language-models",
+        "retrieval-augmented-generation",
+        "quantization",
+        "batch-processing"
+      ],
+      "firstSeen": "2026-05-29T12:00:00.000Z"
+    },
+    "prompt-injection": {
+      "term": "Prompt Injection",
+      "queryTerm": "Prompt Injection",
+      "category": "security-and-safety",
+      "slug": "prompt-injection",
+      "tldr": "A security vulnerability where attackers manipulate LLM behavior by injecting malicious instructions into prompts.",
+      "significance": "Prompt injection is a critical security concern for LLM applications. Attackers can extract training data, bypass safety guardrails, or cause the model to perform unintended actions.",
+      "related": [
+        "large-language-models",
+        "generative-ai",
+        "adversarial-examples",
+        "safety-alignment"
+      ],
+      "firstSeen": "2026-05-29T12:00:00.000Z"
+    },
     "transformer": {
       "term": "Transformer",
       "queryTerm": "Transformer",
@@ -25,7 +153,7 @@
         "attention-mechanism",
         "self-attention",
         "large-language-models",
-        "neural-networks"
+        "deep-learning"
       ],
       "firstSeen": "2024-01-01T00:00:00.000Z"
     },
@@ -39,9 +167,39 @@
       "related": [
         "transformer",
         "self-attention",
-        "sequence-modeling"
+        "sequence-modeling",
+        "large-language-models"
       ],
       "firstSeen": "2024-01-01T00:00:00.000Z"
+    },
+    "self-attention": {
+      "term": "Self-Attention",
+      "queryTerm": "Self-Attention",
+      "category": "model-architectures",
+      "slug": "self-attention",
+      "tldr": "A mechanism where each element in a sequence attends to all other elements, computing relevance weights dynamically.",
+      "significance": "Self-attention is the key innovation of the Transformer architecture, enabling parallel processing and better capture of long-range dependencies compared to RNNs.",
+      "related": [
+        "attention-mechanism",
+        "transformer",
+        "large-language-models"
+      ],
+      "firstSeen": "2026-05-29T12:00:00.000Z"
+    },
+    "neural-networks": {
+      "term": "Neural Networks",
+      "queryTerm": "Neural Networks",
+      "category": "model-architectures",
+      "slug": "neural-networks",
+      "tldr": "Computational models inspired by biological neural networks that learn to map inputs to outputs through interconnected layers.",
+      "significance": "Neural networks are the foundation of modern deep learning and AI. Their ability to learn complex patterns from data has enabled breakthroughs across computer vision, NLP, and beyond.",
+      "related": [
+        "deep-learning",
+        "machine-learning",
+        "transformer",
+        "artificial-intelligence"
+      ],
+      "firstSeen": "2026-05-29T12:00:00.000Z"
     },
     "retrieval-augmented-generation": {
       "term": "Retrieval Augmented Generation",
@@ -53,7 +211,8 @@
       "related": [
         "large-language-models",
         "vector-embeddings",
-        "semantic-search"
+        "semantic-search",
+        "inference"
       ],
       "firstSeen": "2024-01-01T00:00:00.000Z"
     },
@@ -64,18 +223,11 @@
       "slug": "harness",
       "tldr": "A framework that wraps AI models and benchmark datasets to enable standardized, reproducible evaluation across tasks.",
       "significance": "Evaluation harnesses are essential for fairly comparing model capabilities across benchmarks, enabling reproducible research and transparent reporting of AI performance.",
-      "related": [],
+      "related": [
+        "benchmark",
+        "evaluation-metrics"
+      ],
       "firstSeen": "2026-05-29T08:51:48.000Z"
-    },
-    "ai-harness": {
-      "term": "AI Harness",
-      "queryTerm": "AI Harness",
-      "category": "tools-and-frameworks",
-      "slug": "ai-harness",
-      "tldr": "A software wrapper or testing framework that standardizes how AI models receive inputs, produce outputs, and are evaluated.",
-      "significance": "AI harnesses provide a controlled, reproducible environment for testing and benchmarking AI models, making it easier to integrate, compare, and deploy them consistently across different systems and workflows.",
-      "related": [],
-      "firstSeen": "2026-05-29T08:58:02.000Z"
     }
   }
 }

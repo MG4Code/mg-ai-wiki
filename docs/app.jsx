@@ -2,7 +2,7 @@
 
 const { useState, useEffect, useMemo, useRef, useCallback } = React;
 const { useTweaks, TweaksPanel, TweakSection, TweakRow, TweakSlider, TweakToggle, TweakRadio, TweakSelect, TweakText, TweakNumber, TweakColor, TweakButton } = window;
-const { useWiki, GraphView } = window;
+const { useWiki, GraphView, OnionView } = window;
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "look": "aurora",
@@ -92,6 +92,9 @@ function Sidebar({ catMap, view, go, query, setQuery, results }) {
       <nav className="nav">
         <button className={'nav-top' + (view.type === 'overview' ? ' active' : '')} onClick={() => go({ type: 'overview' })}>
           <span className="nav-ico">O</span> Overview map
+        </button>
+        <button className={'nav-top' + (view.type === 'onion' ? ' active' : '')} onClick={() => go({ type: 'onion' })}>
+          <span className="nav-ico">O</span> Onion layers
         </button>
         <div className="nav-section-label">Categories</div>
         <div className="nav-cats">
@@ -284,6 +287,8 @@ function App() {
   let main;
   if (view.type === 'overview') {
     main = <OverviewView entries={entries} catMap={catMap} go={go} processing={processing} showHubLabels={t.showHubLabels} />;
+  } else if (view.type === 'onion') {
+    main = <OnionView entries={entries} onSelectTerm={(slug) => go({ type: 'term', slug })} />;
   } else if (view.type === 'category') {
     main = <CategoryView name={view.name} items={catMap[view.name] || []} go={go} />;
   } else if (view.type === 'term') {

@@ -215,10 +215,10 @@
   .pushbar button:disabled { opacity: 0.4; cursor: default; }
 
   /* ============================ MAIN ============================ */
-  .main { overflow-y: auto; background: radial-gradient(120% 80% at 100% 0%, var(--bg-grad), var(--bg) 55%); }
+  .main { overflow-y: auto; background: radial-gradient(120% 80% at 100% 0%, var(--bg-grad), var(--bg) 55%); position: relative; }
   .main::-webkit-scrollbar { width: 12px; }
   .main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 12px; border: 3px solid var(--bg); background-clip: padding-box; }
-  .main-inner { max-width: 920px; margin: 0 auto; padding: var(--pad); min-height: 100%; }
+  .main-inner { max-width: 920px; margin: 0 auto; padding: var(--pad); min-height: 100%; position: relative; }
 
   .field-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
 
@@ -316,6 +316,27 @@
 
   .missing { color: var(--fg-dim); font-size: 1.05rem; }
 
+  /* ---- onion view ---- */
+  .onion-wrap { position: absolute; inset: 0; }
+  .onion-svg { display: block; }
+  .onion-layer-bg { mix-blend-mode: lighten; }
+  .onion-boundary .onion-ring { transition: stroke 0.2s, stroke-width 0.2s, opacity 0.2s; }
+  .onion-layer { z-index: 10; }
+  .onion-layer-label { pointer-events: none; font-family: var(--font-head); text-shadow: 0 0 12px rgba(0,0,0,0.8); }
+  .onion-entry { transition: filter 0.15s; }
+  .onion-entry.is-hover { filter: drop-shadow(0 0 8px var(--accent)); }
+  .onion-entry circle { transition: r 0.1s, fill 0.1s, stroke-width 0.1s; }
+  .onion-entry line { transition: stroke-width 0.1s, opacity 0.15s; }
+  .onion-node { transition: all 0.15s; }
+  .onion-entry-label { pointer-events: none; transition: fill 0.15s, font-weight 0.15s; font-family: var(--font); }
+  .onion-entry.is-hover .onion-entry-label { font-weight: 600; }
+  .onion-entry-name { pointer-events: none; font-weight: 600; }
+  .onion-entry-cat { pointer-events: none; font-size: 0.75rem; }
+  .onion-legend { pointer-events: none; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; }
+  .onion-empty { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; text-align: center; color: var(--fg-faint); gap: 12px; }
+  .onion-empty-glyph { font-size: 3rem; color: var(--border); }
+  .onion-empty p { margin: 0; line-height: 1.7; }
+
   /* ---- responsive ---- */
   @media (max-width: 880px) {
     .app { grid-template-columns: 1fr; }
@@ -333,6 +354,7 @@
   <script type="text/babel" src="tweaks-panel.jsx"></script>
   <script type="text/babel" src="research.jsx"></script>
   <script type="text/babel" src="graph.jsx"></script>
+  <script type="text/babel" src="onion.jsx"></script>
   <script type="text/babel" src="app.jsx"></script>
 </body>
 </html>
