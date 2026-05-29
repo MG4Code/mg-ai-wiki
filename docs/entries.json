@@ -7,6 +7,10 @@
     "inference-and-serving": {
       "label": "Inference & Serving",
       "description": "Techniques for deploying and running models efficiently"
+    },
+    "tools-and-frameworks": {
+      "label": "Tools & Frameworks",
+      "description": "Software tools, libraries, and frameworks used in AI/ML development"
     }
   },
   "entries": {
@@ -52,6 +56,16 @@
         "semantic-search"
       ],
       "firstSeen": "2024-01-01T00:00:00.000Z"
+    },
+    "harness": {
+      "term": "Harness",
+      "queryTerm": "Harness",
+      "category": "tools-and-frameworks",
+      "slug": "harness",
+      "tldr": "A framework that wraps AI models and benchmark datasets to enable standardized, reproducible evaluation across tasks.",
+      "significance": "Evaluation harnesses are essential for fairly comparing model capabilities across benchmarks, enabling reproducible research and transparent reporting of AI performance.",
+      "related": [],
+      "firstSeen": "2026-05-29T08:51:48.000Z"
     }
   }
 }
