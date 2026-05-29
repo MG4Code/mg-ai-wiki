@@ -91,12 +91,27 @@ function OnionView({ entries, onSelectTerm }) {
   React.useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(() => {
-      setDims({ w: el.clientWidth, h: el.clientHeight });
-    });
+
+    const measure = () => {
+      if (el.clientWidth > 0 && el.clientHeight > 0) {
+        setDims({ w: el.clientWidth, h: el.clientHeight });
+      }
+    };
+
+    const ro = new ResizeObserver(measure);
     ro.observe(el);
-    setDims({ w: el.clientWidth, h: el.clientHeight });
-    return () => ro.disconnect();
+
+    // Initial measurement with delays to catch layout settling
+    requestAnimationFrame(measure);
+    setTimeout(measure, 50);
+    setTimeout(measure, 150);
+    setTimeout(measure, 400);
+
+    window.addEventListener('resize', measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+    };
   }, []);
 
   const cx = dims.w / 2, cy = dims.h / 2;
@@ -136,7 +151,7 @@ function OnionView({ entries, onSelectTerm }) {
 
   return (
     <div className="onion-wrap" ref={wrapRef}>
-      <svg width={dims.w} height={dims.h} className="onion-svg">
+      <svg width="100%" height="100%" viewBox={`0 0 ${dims.w} ${dims.h}`} className="onion-svg" preserveAspectRatio="xMidYMid meet">
         {/* Draw layer background rings from outermost to innermost */}
         {Object.keys(layers).sort((a, b) => parseInt(b) - parseInt(a)).map((layerKey) => {
           const layer = parseInt(layerKey);
@@ -336,18 +351,6 @@ function OnionView({ entries, onSelectTerm }) {
           );
         })}
 
-        {/* Legend */}
-        <g className="onion-legend" transform={`translate(${dims.w - 150}, 20)`}>
-          <text x="0" y="0" fontSize="11" fontWeight="600" fill="var(--fg-dim)">
-            Onion Layers
-          </text>
-          <text x="0" y="16" fontSize="9" fill="var(--fg-faint)">
-            Center: Core concepts
-          </text>
-          <text x="0" y="28" fontSize="9" fill="var(--fg-faint)">
-            Outward: Related terms
-          </text>
-        </g>
       </svg>
     </div>
   );

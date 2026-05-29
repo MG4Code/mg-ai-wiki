@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>AI Wiki</title>
+<link rel="icon" type="image/webp" href="icon.webp" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Spline+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -88,6 +89,13 @@
     flex-direction: column;
     min-height: 0;
     padding: 22px 0 0;
+    transition: width 0.3s ease, margin 0.3s ease;
+    width: var(--sb-w);
+  }
+  .sidebar.is-closed {
+    width: 0;
+    overflow: hidden;
+    border-right: none;
   }
   .brand {
     display: flex; align-items: center; gap: 12px;
@@ -95,12 +103,10 @@
   }
   .brand-mark {
     width: 38px; height: 38px; flex: none;
-    display: grid; place-items: center;
-    font-size: 22px; color: var(--bg);
-    background: var(--accent);
     border-radius: 11px;
     box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent) 50%, transparent),
                 0 6px 22px -8px var(--accent);
+    object-fit: cover;
   }
   .brand-name { font-weight: 700; font-size: 1.06rem; letter-spacing: -0.01em; }
   .brand-sub { font-size: 0.72rem; color: var(--fg-faint); margin-top: 1px; }
@@ -243,7 +249,10 @@
   .field-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
 
   /* ---- breadcrumb ---- */
-  .crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 26px; font-size: 0.82rem; }
+  .crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 26px; font-size: 0.82rem; padding-right: 8px; }
+  @media (max-width: 880px) {
+    .crumbs { padding-left: 56px; }
+  }
   .crumb-seg { display: inline-flex; align-items: center; gap: 6px; }
   .crumb { background: none; border: none; padding: 2px 0; color: var(--fg-faint); font-size: inherit; font-family: inherit; }
   .crumb:hover { color: var(--accent); }
@@ -343,8 +352,19 @@
   .missing { color: var(--fg-dim); font-size: 1.05rem; }
 
   /* ---- onion view ---- */
-  .onion-wrap { position: absolute; inset: 0; }
-  .onion-svg { display: block; }
+  .onion-wrap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+  .onion-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+  }
   .onion-layer-bg { mix-blend-mode: lighten; }
   .onion-boundary .onion-ring { transition: stroke 0.2s, stroke-width 0.2s, opacity 0.2s; }
   .onion-layer { z-index: 10; }
@@ -363,10 +383,108 @@
   .onion-empty-glyph { font-size: 3rem; color: var(--border); }
   .onion-empty p { margin: 0; line-height: 1.7; }
 
+  @media (max-width: 880px) {
+    .main-inner {
+      padding: 0;
+      min-height: calc(100vh - 60px);
+    }
+  }
+
+  /* ---- burger menu ---- */
+  .burger-btn {
+    display: flex; flex-direction: column; justify-content: center; gap: 5px;
+    width: 44px; height: 44px; background: none; border: none; padding: 8px;
+    margin-right: 12px; cursor: pointer; flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    transition: all 0.3s ease;
+    position: relative;
+    left: 0;
+    touch-action: manipulation;
+  }
+  .app .sidebar.is-closed ~ .main .burger-btn {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    z-index: 101;
+  }
+  .burger-btn span {
+    width: 20px; height: 2.5px; background: var(--fg-dim);
+    border-radius: 2px; transition: all 0.3s ease;
+    display: block;
+  }
+  .burger-btn:hover { background: color-mix(in oklab, var(--accent) 10%, transparent); }
+  .burger-btn:active { background: color-mix(in oklab, var(--accent) 20%, transparent); }
+  .burger-btn:hover span { background: var(--fg); }
+  .main-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid transparent;
+    transition: padding 0.3s ease;
+  }
+  .app .sidebar.is-closed ~ .main .main-header {
+    padding-left: 56px;
+  }
+
+  /* Mobile sidebar backdrop */
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 99;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { background: rgba(0, 0, 0, 0); }
+    to { background: rgba(0, 0, 0, 0.4); }
+  }
+
   /* ---- responsive ---- */
   @media (max-width: 880px) {
     .app { grid-template-columns: 1fr; }
-    .sidebar { display: none; }
+    .sidebar {
+      position: fixed; left: 0; top: 0; height: 100vh;
+      z-index: 100; transition: transform 0.3s ease;
+      width: 85vw;
+      max-width: var(--sb-w);
+      border-right: 1px solid var(--border-soft);
+      transform: translateX(-100%);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .sidebar:not(.is-closed) { transform: translateX(0); }
+    .sidebar.is-closed { width: 85vw; overflow: visible; }
+    .main-header {
+      border-bottom: 1px solid var(--border-soft);
+      padding: 16px 0;
+    }
+    .burger-btn {
+      width: 52px;
+      height: 52px;
+      padding: 12px;
+      margin-right: 8px;
+    }
+    .burger-btn span {
+      width: 24px;
+      height: 3px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    :root {
+      --pad: 20px;
+      --sb-w: 280px;
+    }
+    .main-header {
+      padding: 12px 0;
+    }
+    .burger-btn {
+      width: 48px;
+      height: 48px;
+    }
+    .burger-btn span {
+      width: 22px;
+      height: 2.5px;
+    }
   }
 </style>
 </head>

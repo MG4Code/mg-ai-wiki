@@ -62,7 +62,7 @@ function QueueFeed({ log, processing, onClear }) {
 
 
 // ---- sidebar -----------------------------------------------------------
-function Sidebar({ catMap, view, go, query, setQuery, results }) {
+function Sidebar({ catMap, view, go, query, setQuery, results, isOpen, onClose }) {
   const [expandedCats, setExpandedCats] = useState({});
 
   const toggleCategory = (cat) => {
@@ -108,9 +108,9 @@ function Sidebar({ catMap, view, go, query, setQuery, results }) {
   });
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar${!isOpen ? ' is-closed' : ''}`}>
       <div className="brand" onClick={() => go({ type: 'onion' })}>
-        <div className="brand-mark">◑</div>
+        <img src="icon.webp" alt="AI Wiki" className="brand-mark" />
         <div className="brand-text">
           <div className="brand-name">AI&nbsp;Wiki</div>
           <div className="brand-sub">a self-filing encyclopedia</div>
@@ -124,7 +124,7 @@ function Sidebar({ catMap, view, go, query, setQuery, results }) {
           <div className="search-results">
             {results.length === 0 && <div className="search-none">no matches</div>}
             {results.map(e => (
-              <button key={e.slug} className="search-hit" onClick={() => { go({ type: 'term', slug: e.slug }); setQuery(''); }}>
+              <button key={e.slug} className="search-hit" onClick={() => { go({ type: 'term', slug: e.slug }); setQuery(''); onClose(); }}>
                 <span className="search-hit-term">{e.term}</span>
                 <span className="search-hit-cat">{e.category}</span>
               </button>
@@ -160,7 +160,7 @@ function Sidebar({ catMap, view, go, query, setQuery, results }) {
                   {catMap[cat].map(e => (
                     <button key={e.slug}
                             className={'nav-term' + (view.type === 'term' && view.slug === e.slug ? ' active' : '')}
-                            onClick={() => go({ type: 'term', slug: e.slug })}>
+                            onClick={() => { go({ type: 'term', slug: e.slug }); onClose(); }}>
                       {e.term}
                     </button>
                   ))}
@@ -215,7 +215,7 @@ function TermView({ entry, entryBySlug, go }) {
   return (
     <article className="term">
       <Breadcrumb trail={[
-        { label: 'O Map', onClick: () => go({ type: 'overview' }) },
+        { label: 'Onion layers', onClick: () => go({ type: 'onion' }) },
         { label: entry.category, onClick: () => go({ type: 'category', name: entry.category }) },
         { label: entry.term },
       ]} />
@@ -256,11 +256,11 @@ function TermView({ entry, entryBySlug, go }) {
   );
 }
 
-function CategoryView({ name, items, go }) {
+function CategoryView({ name, items, go, onSelectTerm }) {
   return (
     <div className="catview">
       <Breadcrumb trail={[
-        { label: 'O Map', onClick: () => go({ type: 'overview' }) },
+        { label: 'Onion layers', onClick: () => go({ type: 'onion' }) },
         { label: name },
       ]} />
       <div className="catview-head">
@@ -270,7 +270,7 @@ function CategoryView({ name, items, go }) {
       </div>
       <div className="card-grid">
         {items.map(e => (
-          <button key={e.slug} className="entry-card" onClick={() => go({ type: 'term', slug: e.slug })}>
+          <button key={e.slug} className="entry-card" onClick={() => (onSelectTerm ? onSelectTerm(e.slug) : go({ type: 'term', slug: e.slug }))}>
             <h3>{e.term}</h3>
             <p>{e.tldr}</p>
             <span className="entry-card-go">Read -></span>
@@ -312,8 +312,19 @@ function App() {
   const { entries, log, processing, pushTerms, syncQueue, resetAll, clearLog } = wiki;
   const [view, setView] = useState({ type: 'onion' });
   const [query, setQuery] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const go = useCallback((v) => { setView(v); window.scrollTo(0, 0); }, []);
+
+  // Set sidebar visibility based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      setSidebarOpen(window.innerWidth > 880);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Load entries on mount.
   useEffect(() => {
@@ -354,7 +365,7 @@ function App() {
   } else if (view.type === 'onion') {
     main = <OnionView entries={entries} onSelectTerm={(slug) => go({ type: 'term', slug })} />;
   } else if (view.type === 'category') {
-    main = <CategoryView name={view.name} items={catMap[view.name] || []} go={go} />;
+    main = <CategoryView name={view.name} items={catMap[view.name] || []} go={go} onSelectTerm={(slug) => { go({ type: 'term', slug }); setSidebarOpen(false); }} />;
   } else if (view.type === 'term') {
     const entry = entries[view.slug];
     main = entry
@@ -364,9 +375,18 @@ function App() {
 
   return (
     <div className="app" data-look={t.look} data-density={t.density} data-mono={t.monoTerms ? 'on' : 'off'} style={rootStyle}>
+      {sidebarOpen && window.innerWidth <= 880 && (
+        <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
+      )}
       <Sidebar catMap={catMap} view={view} go={go}
-               query={query} setQuery={setQuery} results={results} />
+               query={query} setQuery={setQuery} results={results}
+               isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <main className="main">
+        <div className="main-header">
+          <button className="burger-btn" onClick={() => setSidebarOpen(!sidebarOpen)} title="Toggle menu">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
         <div className="main-inner">{main}</div>
       </main>
 
