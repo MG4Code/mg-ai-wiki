@@ -60,25 +60,9 @@ function QueueFeed({ log, processing, onClear }) {
   );
 }
 
-function GitHubPrompt() {
-  return (
-    <div style={{
-      fontSize: '0.85rem',
-      color: 'var(--fg-faint)',
-      padding: '12px',
-      textAlign: 'center',
-      lineHeight: '1.6'
-    }}>
-      Add terms to <code style={{ background: 'var(--panel)', padding: '0.2em 0.4em', borderRadius: '4px' }}>queue.txt</code> and push to GitHub.
-      <div style={{ marginTop: '8px', fontSize: '0.75rem', color: 'var(--fg-faint)' }}>
-        A GitHub Action will research them automatically.
-      </div>
-    </div>
-  );
-}
 
 // ---- sidebar -----------------------------------------------------------
-function Sidebar({ catMap, view, go, query, setQuery, results, onSync, syncing }) {
+function Sidebar({ catMap, view, go, query, setQuery, results }) {
   return (
     <aside className="sidebar">
       <div className="brand" onClick={() => go({ type: 'overview' })}>
@@ -133,13 +117,6 @@ function Sidebar({ catMap, view, go, query, setQuery, results, onSync, syncing }
         </div>
       </nav>
 
-      <div className="sidebar-foot">
-        <button className={'sync-btn' + (syncing ? ' busy' : '')} onClick={onSync} title="Reload entries from entries.json">
-          <span className="sync-ico">Reload</span>
-          {syncing ? 'Reloading...' : 'Reload entries'}
-        </button>
-        <GitHubPrompt />
-      </div>
     </aside>
   );
 }
@@ -268,25 +245,16 @@ function App() {
   const { entries, log, processing, pushTerms, syncQueue, resetAll, clearLog } = wiki;
   const [view, setView] = useState({ type: 'overview' });
   const [query, setQuery] = useState('');
-  const [syncing, setSyncing] = useState(false);
 
   const go = useCallback((v) => { setView(v); window.scrollTo(0, 0); }, []);
 
-  // Initial sync of queue.txt on mount.
+  // Load entries on mount.
   useEffect(() => {
     let alive = true;
     (async () => {
-      setSyncing(true);
       await syncQueue();
-      if (alive) setSyncing(false);
     })();
     return () => { alive = false; };
-  }, [syncQueue]);
-
-  const doSync = useCallback(async () => {
-    setSyncing(true);
-    await syncQueue();
-    setSyncing(false);
   }, [syncQueue]);
 
   // Derived structures
@@ -328,8 +296,7 @@ function App() {
   return (
     <div className="app" data-look={t.look} data-density={t.density} data-mono={t.monoTerms ? 'on' : 'off'} style={rootStyle}>
       <Sidebar catMap={catMap} view={view} go={go}
-               query={query} setQuery={setQuery} results={results}
-               onSync={doSync} syncing={syncing} />
+               query={query} setQuery={setQuery} results={results} />
       <main className="main">
         <div className="main-inner">{main}</div>
       </main>
